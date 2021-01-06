@@ -23,7 +23,23 @@ public class Parser {
     }
 
     private Expr expression() {
-        return equality();
+        return ternary();
+    }
+
+    private Expr ternary() {
+        Expr expr = equality();
+
+        while (match(Q_MARK)) {
+            Token tern_operator = previous();
+            Expr left_exp = expression();
+            consume(COLON, "Expect ':' after ternary operator");
+            Token colon = previous();
+            Expr right_expr = expression();
+            Expr right_ternary = new Expr.Binary(left_exp, colon, right_expr);
+            expr = new Expr.Binary(expr, tern_operator, right_ternary);
+        }
+
+        return expr;
     }
 
     private Expr equality() {
