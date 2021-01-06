@@ -71,9 +71,22 @@ public class Scanner {
             case '>': addToken(match('=') ? TokenType.GREATER_EQUAL: TokenType.GREATER); break;
             case '<': addToken(match('=') ? TokenType.LESS_EQUAL: TokenType.LESS); break;
             case '/':
+                // Line comment
                 if (match('/')) {
-                    while (peek() != '\n' && !isAtEnd())
+                    while (peek() != '\n' && !isAtEnd()) {
                         advance();
+                    }
+                }
+                // Block comment
+                else if (match('*')) {
+                    while (!isAtEnd()) {
+                        if (peek() == '*' && peekNext() == '/') {
+                            advance();
+                            advance();
+                            break;
+                        }
+                        advance();
+                    }
                 }
                 else {
                     addToken(TokenType.SLASH);

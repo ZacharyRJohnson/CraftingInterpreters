@@ -120,6 +120,11 @@ public class Parser {
             return new Expr.Grouping(expr);
         }
 
+        if (match(LESS, LESS_EQUAL, GREATER, GREATER_EQUAL, BANG_EQUAL, EQUAL_EQUAL,
+                SLASH, STAR, MINUS, PLUS)) {
+            throw error(previous(), "No left hand operand for binary operator");
+        }
+
         throw error(peek(), "Expect expression.");
     }
 
