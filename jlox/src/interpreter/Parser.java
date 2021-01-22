@@ -1,5 +1,6 @@
 package interpreter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static interpreter.TokenType.*;
@@ -14,14 +15,37 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    public Expr parse() {
-        try {
-            return expression();
-        } catch (ParseError error) {
-            return null;
+    List<Stmt> parse() {
+        List<Stmt> statements = new ArrayList<>();
+        while (!isAtEnd()) {
+            statements.add(statement());
         }
+
+        return statements;
     }
 
+    // Statement Parsing
+    private Stmt statement() {
+        if (match(PRINT)) {
+            return printStatement();
+        }
+
+        return expressionStatement();
+    }
+
+    private Stmt printStatement() {
+        Expr value = expression();
+        consume(SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Print(value);
+    }
+
+    private Stmt expressionStatement() {
+        Expr expr = expression();
+        consume(SEMICOLON, "Expect ';' after expression.");
+        return new Stmt.Expression(expr);
+    }
+
+    // Expression Parsing
     private Expr expression() {
         return ternary();
     }
